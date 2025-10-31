@@ -1,0 +1,48 @@
+@media print {
+    html,
+    body {
+      /* font-size: 14px !important;
+      font-family: 'Times New Roman', Times, serif !important; */
+      width: 210mm;
+      height: 297mm;
+      background: white;}
+    div[data-size="A4"] {
+        margin: 20mm 20mm 20mm 20mm;
+        background: white; }
+  }
+
+  @page {
+    size: A4 portrait;
+    background: white;
+    position: absolute;
+    margin: 0mm;
+    margin-bottom: 1.5cm;
+
+ }
+
+ @page:right {
+    @bottom-right {
+      content: counter(pagina);
+     }
+   }
+
+   div[data-size="A4"] {
+    background: white;
+    display: block;
+    margin: 0 auto;
+    margin-bottom: 0.5cm;
+    -webkit-print-color-adjust: exact;
+    -webkit-box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 0.5cm rgba(0, 0, 0, 0.5);
+    /* background: url(../img/svg/pattern-1.svg) no-repeat center bottom; */
+     /* background-image: none; */
+    background-size: cover;
+    padding: 4rem;
+    position: relative; }
+
+    @media print {
+        .table td, .table th {
+            background-color: rgb(255, 255, 255) !important;
+        }
+    }
+

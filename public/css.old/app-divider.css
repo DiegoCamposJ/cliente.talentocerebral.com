@@ -1,0 +1,65 @@
+.vertical-divider {
+    position: absolute;
+    color:#2198F3;
+    z-index: 10;
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    padding: 0;
+    width: 3px;
+    height: 50%;
+    line-height: 0;
+    text-align:center;
+    text-transform: uppercase;
+    transform: translateX(-50%);
+  }
+
+  .vertical-divider:before,
+  .vertical-divider:after {
+    position: absolute;
+    color:#2198F3;
+    width: 0px;
+    left: 50%;
+    content: '';
+    z-index: 9;
+    border-left: 1px solid #2198F3;
+    border-right: 0px solid #2198F3;
+
+    height: calc(100%);
+  }
+
+  .row-divided > .vertical-divider {
+    height: calc(50% - 1rem);
+  }
+
+  .vertical-divider:before {
+    top: -100%;
+  }
+
+  .vertical-divider:after {
+    top: auto;
+    bottom: 0;
+  }
+
+  .row-divided {
+    position:relative;
+  }
+
+  .row-divided > [class^="col-"],
+  .row-divided > [class*=" col-"] {
+    padding-left: 30px;  /* gutter width (give a little extra room) 2x default */
+    padding-right: 30px; /* gutter width (give a little extra room) 2x default */
+  }
+
+
+
+
+  /* just to set different column heights - not needed to function */
+  .column-one {
+    height: 300px;
+    background-color: #EBFFF9;
+  }
+  .column-two {
+    height: 400px;
+    background-color: #F7F3FF;
+  }

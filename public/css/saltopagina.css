@@ -1,0 +1,7 @@
+@media print{
+    /* indicamos el salto de pagina */
+    .saltoDePagina{
+        display:block;
+        page-break-before:always;
+    }
+}

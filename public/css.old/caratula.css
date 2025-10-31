@@ -1,0 +1,60 @@
+contenedor{
+    position: absolute;
+    display: inline-block;
+    text-align: center;
+}
+
+.texto-encima{
+    position: absolute;
+    top: 800px;
+    left: 500px;
+}
+
+.texto-capacerebra1{
+    position: absolute;
+    top: 110px;
+    left: 170px;
+}
+
+.texto-capacerebra2{
+    position: absolute;
+    top: 110px;
+    left: 270px;
+}
+.centrado{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+}
+
+.numero-pagina{
+    position: absolute;
+    top: 1300px;
+    left: 900px;
+}
+
+
+.Q-pagina3{
+    position: absolute;
+    top: 55px;
+    left: 70px;
+}
+
+.U-pagina3{
+    position: absolute;
+    top: 355px;
+    left: 135px;
+}
+
+.A-pagina3{
+    position: absolute;
+    top: 355px;
+    left: 320px;
+}
+
+.D-pagina3{
+    position: absolute;
+    top: 55px;
+    left: 210px;
+}

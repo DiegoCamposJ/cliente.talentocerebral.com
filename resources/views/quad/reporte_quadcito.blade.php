@@ -1,0 +1,2698 @@
+@extends('layouts.app')
+
+@section('title', 'Reporte QUAD')
+
+    @section('css')
+    {!!Html::style('css/estilos-impresion.css')!!}
+    {!!Html::style('css/caratula.css')!!}
+    {!!Html::style('css/app-divider.css')!!}
+    {!!Html::style('css/saltopagina.css')!!}
+
+@stop
+@section('content')
+
+
+        <div class="container">
+            <div data-size="A4">
+                    <!--PÁGINA 1 -->
+                    @include('quad.paginas.1')
+                    <!--PÁGINA 2-->
+                    <br><br><br><br>
+                    <br><br><br><br>
+                    @include('quad.paginas.2')
+                    <!--PÁGINA 3-->
+                    <br><br><br><br><br><br><br>
+                    @include('quad.paginas.3')
+                    <!--PÁGINA 4-->
+                    <br><br><br><br><br><br>
+                    @include('quad.paginas.4')
+                    <div class="saltoDePagina"></div>
+                    <br><br>
+                    <!--PÁGINA 5-->
+                    @include('quad.paginas.5')
+                    <div class="saltoDePagina"></div>
+                    <br><br>
+                    @include('quad.paginas.6')
+                    <div class="saltoDePagina"></div>
+                    <br><br>
+                    @include('quad.paginas.13')
+                    @if($evaluacion->carrera_preferida != 0)
+                    <br><br>
+                        @include('quad.paginas.15')
+                    @endif
+                    <div class="saltoDePagina"></div>
+                    @include('quad.paginas.14')
+
+
+            </div>
+        </div>
+
+
+
+
+
+@stop
+
+@section('scripts')
+    <script src="{{ asset('js/statistics/easypiechart/easypiechart.bundle.js')}}"></script>
+    <script src="{{ asset('js/statistics/chartjs/chartjs.bundle.js')}}"></script>
+    <script src="{{ asset('js/statistics/chartist/chartist.js')}}"></script>
+    <script src="{{ asset('js/statistics/d3/d3.js')}}"></script>
+    <script src="{{ asset('js/statistics/c3/c3.js')}}"></script>
+    <script src="{{ asset('js/statistics/flot/flot.bundle.js')}}"></script>
+
+
+
+
+<script>
+
+           var donutChart3 = c3.generate(
+            {
+                bindto: "#donutChart3",
+                data:
+                {
+                    // iris data from R
+                    columns: [
+                        ['Q', @json($PO_NUCLEO_AZ ?? '')],
+                        ['U', @json($PO_NUCLEO_VE ?? '')],
+                        ["A", @json($PO_NUCLEO_RO ?? '')],
+                        ["D", @json($PO_NUCLEO_AM ?? '')],
+
+
+                    ],
+                    type: 'donut',
+                    labels: true
+
+                },
+                donut:
+                {
+                    title: "NÚCLEO"
+                },
+
+            });
+
+
+            var barDescriptoresHemisferios = function()
+            {
+                var barHorizontalStackedData = {
+
+                    datasets: [
+                    {
+                        label: "Hemisferio  Derecho",
+                        backgroundColor: color.fusion._900,
+                        data: [@json($PO_conceptual ?? 0),@json($PO_creativo ?? 0),@json($PO_metaforico ?? 0),@json($PO_imaginativo ?? 0),@json($PO_comunicador ?? 0),@json($PO_apasionado ?? 0),@json($PO_empatico ?? 0),@json($PO_capacitador ?? 0)]
+                    },
+                    {
+                        label: "Hemisferio Izquierdo",
+                        backgroundColor: color.warning._600,
+                        data: [@json($PO_numerico ?? 0),@json($PO_racional ?? 0),@json($PO_resolutor ?? 0),@json($PO_deductivo ?? 0),@json($PO_directivo ?? 0),@json($PO_procedimental ?? 0),@json($PO_articulado ?? 0),@json($PO_estructurado ?? 0)]
+                    }],
+                    labels:
+                         ["", "", "", "", "", "", "",""],
+                    // labels:
+                    //     ["Numérico", "Racional", "Resolutor", "Deductivo", "Directivo", "Procedimental", "Articulado","Estructurado"],
+                };
+                var config = {
+                    type: 'horizontalBar',
+                    data: barHorizontalStackedData,
+                    options:
+                    {
+                        legend:
+                        {
+                            display: false,
+                            labels:
+                            {
+                                display: true
+                            }
+                        },
+                        scales:
+                        {
+                            yAxes: [
+                            {
+
+                                stacked: true,
+                                gridLines:
+                                {
+                                    display: false,
+                                    color: "#f2f2f2"
+                                },
+                                ticks:
+                                {
+                                    beginAtZero: false,
+                                    fontSize: 11
+                                }
+                            }],
+                            xAxes: [
+                            {
+                                display: false,
+                                stacked: false,
+                                gridLines:
+                                {
+                                    display: false,
+                                    color: "#f2f2f2"
+                                },
+                                ticks:
+                                {
+                                    beginAtZero: false,
+                                    fontSize: 11
+                                }
+                            }]
+                        }
+                    }
+                }
+                new Chart($("#barDescriptoresHemisferios > canvas").get(0).getContext("2d"), config);
+            }
+
+
+            var barCapaCerebral = function()
+            {
+                var barChartData = {
+                    labels: ["",""],
+                    datasets: [
+                    {
+                        label: "NEOCORTEX " + @json(round(($PO_NUCLEO_AZ + $PO_NUCLEO_AM),2)) + " %",
+                        backgroundColor: color.warning._600,
+                        borderWidth: 1,
+                        data: [@json($PO_NUCLEO_AZ ?? 0),@json($PO_NUCLEO_AM ?? 0)]
+                    },
+                    {
+                        label: "",
+                        backgroundColor: color.fusion._900,
+                        borderWidth: 1,
+                        data: [- @json($PO_NUCLEO_VE ?? 0), - @json($PO_NUCLEO_RO ?? 0)]
+                    }]
+
+                };
+                var config = {
+                    type: 'bar',
+                    data: barChartData,
+                    options:
+                    {
+                        legend:
+                        {
+                            display: false,
+                            labels:
+                            {
+                                display: true
+                            }
+                        },
+                        responsive: true,
+                        title:
+                        {
+                            display: false,
+                            text: 'Capas Cerebrales'
+                        },
+                        scales:
+                        {
+                            xAxes: [
+                            {
+                                display: true,
+                                scaleLabel:
+                                {
+                                    display: true,
+                                    labelString: ''
+                                },
+                                gridLines:
+                                {
+                                    display: true,
+                                    color: "#f2f2f2"
+                                },
+                                ticks:
+                                {
+                                    beginAtZero: true,
+                                    fontSize: 20
+                                }
+                            }],
+                            yAxes: [
+                            {
+                                display: true,
+                                scaleLabel:
+                                {
+                                    display: false,
+                                    labelString: 'Profit margin (approx)'
+                                },
+                                gridLines:
+                                {
+                                    display: true,
+                                    color: "#f2f2f2"
+                                },
+                                ticks:
+                                {
+                                    beginAtZero: true,
+                                    fontSize: 11
+                                }
+                            }]
+                        }
+                    }
+                }
+                new Chart($("#barCapaCerebral > canvas").get(0).getContext("2d"), config);
+            }
+
+
+            $(document).ready(function()
+            {
+
+                barDescriptoresHemisferios();
+                barCapaCerebral();
+                nucleo();
+                // circustancial();
+                leyandaCarreras();
+                leyandaCarreraPreferida();
+                // leyandaComparativa();
+                leyandaHemisferios();
+                leyandaCapasCerebrales();
+
+                //diagramaCarrera1();
+
+                if(@json($campana->carreras ?? 0) == "1" )
+                {
+                    diagramaCarrera1();
+                    diagramaCarrera2();
+                    diagramaCarrera3();
+                    diagramaCarrera4();
+                    diagramaCarrera5();
+                }
+
+                if(@json($carrera_preferida ?? 0) != "0" )
+                {
+                    diagramaCarrera6();
+                }
+
+
+
+                if(@json($COD_AZ ?? 0) == "1" )
+                    fnCod1Azul();
+
+
+                if(@json($COD_AZ ?? 0) == "2" )
+                   fnCod2Azul();
+
+
+
+                if(@json($COD_AZ ?? 0) == "3" )
+                    codigoChartQ3();
+
+
+
+                if(@json($COD_VE ?? 0) == "1" )
+                    fnCod1Verde();
+
+                if(@json($COD_VE ?? 0) == "2" )
+                    fnCod2Verde();
+
+                if(@json($COD_VE ?? 0) == "3" )
+                    codigoChartU3();
+
+
+                if(@json($COD_RO ?? 0) == "1" )
+                    fnCod1Rojo();
+
+
+                if(@json($COD_RO ?? 0) == "2" )
+                    fnCod2Rojo();
+
+                if(@json($COD_RO ?? 0) == "3" )
+                    codigoChartA3();
+
+
+                if(@json($COD_AM ?? 0) == "1" )
+                    fnCod1Amarillo();
+
+
+                if(@json($COD_AM ?? 0) == "2" )
+                    fnCod2Amarillo();
+
+                if(@json($COD_AM ?? 0) == "3" )
+                    codigoChartD3();
+
+
+            });
+
+
+            function leyandaHemisferios()
+            {
+                var ctx = document.getElementById('leyandahemisferios').getContext('2d');
+
+                    ctx.fillStyle = color.warning._600
+                    ctx.fillRect(50, 15, 15, 15);
+
+                    ctx.fillStyle = color.fusion._900
+                    ctx.fillRect(280, 15, 15, 15);
+
+
+                    ctx.fillStyle = '#000000';
+                    ctx.font = "bold 10px sans-serif";
+                    ctx.fillText("H. IZQUIERDO " + @json(round(($HEM_IZQUIERO),2)) + " %",70,25);
+                    ctx.fillText("H. DERECHO " + @json(round(($HEM_DERECHO),2)) + " %",300,25);
+
+            }
+
+            function leyandaCapasCerebrales()
+            {
+                    var ctx = document.getElementById('leyandacapascerebrales').getContext('2d');
+
+                    ctx.fillStyle = color.warning._600
+                    ctx.fillRect(20, 20, 15, 15);
+
+                    ctx.fillStyle = color.fusion._900
+                    ctx.fillRect(200, 20, 15, 15);
+
+                    ctx.fillStyle = color.fusion._900
+                    ctx.font = "bold 10px sans-serif";
+
+                    // ctx.fillText("NEOCORTEX " + @json(round(($PO_NUCLEO_AZ + $PO_NUCLEO_AM),2)) + " %",40,30);
+                    // ctx.fillText("LÍMBICA " + @json(round(($PO_NUCLEO_VE + $PO_NUCLEO_RO),2)) + " %",220,30);
+
+                    ctx.fillText("NEOCORTEX " + @json($NEOCORTEX) + " %",40,30);
+                    ctx.fillText("LÍMBICA " + @json($LIMBICA) + " %",220,30);
+            }
+
+
+
+            function fnCod1Azul()
+            {
+                    //var ctx = document.getElementById('canvas').getContext('2d');
+
+                    var canvas = document.getElementById("cod1Azul");
+                    var ctx = canvas.getContext('2d');
+
+                    ctx.beginPath();
+
+                    ctx.fillStyle = "#1F68AF";
+                    ctx.arc(150, 150, 150 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.arc(150, 150, 100 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#C4C9CE";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 70, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 30, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.lineWidth=2;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(4, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(296, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(150, 4, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(45, 50, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(255, 50, 3, 0, Math.PI *2 , true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=4;
+
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.moveTo(247,60);
+                    ctx.lineTo(145,150);
+                    ctx.lineTo(155,150);
+                    ctx.lineTo(247,60);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.closePath();
+
+
+            }
+
+            function fnCod1Verde()
+            {
+                    // #2198F3
+                    // #009540
+                    // #f4bc00
+                    // #e40439
+
+
+                    var canvas = document.getElementById("cod1Verde");
+                    var ctx = canvas.getContext('2d');
+
+                    ctx.beginPath();
+
+                    ctx.fillStyle = "#0B8F3B";
+                    ctx.arc(150, 150, 150 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.arc(150, 150, 100 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#C4C9CE";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 70, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 30, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.lineWidth=2;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(4, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(296, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(150, 4, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(45, 50, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(255, 50, 3, 0, Math.PI *2 , true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=4;
+
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.moveTo(247,60);
+                    ctx.lineTo(145,150);
+                    ctx.lineTo(155,150);
+                    ctx.lineTo(247,60);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.closePath();
+
+
+            }
+
+            function fnCod1Rojo()
+            {
+
+                    var canvas = document.getElementById("cod1Rojo");
+                    var ctx = canvas.getContext('2d');
+
+                    ctx.beginPath();
+
+                    ctx.fillStyle = "#E12C2B";
+                    ctx.arc(150, 150, 150 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.arc(150, 150, 100 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#C4C9CE";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 70, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 30, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.lineWidth=2;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(4, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(296, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(150, 4, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(45, 50, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(255, 50, 3, 0, Math.PI *2 , true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=4;
+
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.moveTo(247,60);
+                    ctx.lineTo(145,150);
+                    ctx.lineTo(155,150);
+                    ctx.lineTo(247,60);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.closePath();
+
+
+            }
+
+            function fnCod1Amarillo()
+            {
+
+                    var canvas = document.getElementById("cod1Amarillo");
+                    var ctx = canvas.getContext('2d');
+
+                    ctx.beginPath();
+
+                    ctx.fillStyle = "#F5E517";
+                    ctx.arc(150, 150, 150 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.arc(150, 150, 100 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#C4C9CE";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 70, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 30, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.lineWidth=2;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(4, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(296, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(150, 4, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(45, 50, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(255, 50, 3, 0, Math.PI *2 , true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=4;
+
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.moveTo(247,60);
+                    ctx.lineTo(145,150);
+                    ctx.lineTo(155,150);
+                    ctx.lineTo(247,60);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.closePath();
+
+
+            }
+
+            function fnCod2Azul()
+            {
+                    //var ctx = document.getElementById('canvas').getContext('2d');
+
+                    var canvas = document.getElementById("cod2Azul");
+                    var ctx = canvas.getContext('2d');
+
+                    ctx.beginPath();
+
+                    ctx.fillStyle = "#1F68AF";
+                    ctx.arc(150, 150, 150 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.arc(150, 150, 100 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#C4C9CE";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 70, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 30, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.lineWidth=2;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(4, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(296, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(150, 4, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(45, 50, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(255, 50, 3, 0, Math.PI *2 , true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=4;
+
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.moveTo(150,15);
+                    ctx.lineTo(145,150);
+                    ctx.lineTo(155,150);
+                    ctx.lineTo(150,15);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.closePath();
+
+
+            }
+
+            function fnCod2Verde()
+            {
+                    //var ctx = document.getElementById('canvas').getContext('2d');
+
+                    var canvas = document.getElementById("cod2Verde");
+                    var ctx = canvas.getContext('2d');
+
+                    ctx.beginPath();
+
+                    ctx.fillStyle = "#0B8F3B";
+                    ctx.arc(150, 150, 150 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.arc(150, 150, 100 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#C4C9CE";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 70, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 30, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.lineWidth=2;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(4, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(296, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(150, 4, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(45, 50, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(255, 50, 3, 0, Math.PI *2 , true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=4;
+
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.moveTo(150,15);
+                    ctx.lineTo(145,150);
+                    ctx.lineTo(155,150);
+                    ctx.lineTo(150,15);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.closePath();
+
+
+            }
+
+            function fnCod2Rojo ()
+            {
+                    //var ctx = document.getElementById('canvas').getContext('2d');
+
+                    var canvas = document.getElementById("cod2Rojo");
+                    var ctx = canvas.getContext('2d');
+
+                    ctx.beginPath();
+
+                    ctx.fillStyle = "#E12C2B";
+                    ctx.arc(150, 150, 150 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.arc(150, 150, 100 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#C4C9CE";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 70, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 30, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.lineWidth=2;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(4, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(296, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(150, 4, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(45, 50, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(255, 50, 3, 0, Math.PI *2 , true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=4;
+
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.moveTo(150,15);
+                    ctx.lineTo(145,150);
+                    ctx.lineTo(155,150);
+                    ctx.lineTo(150,15);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.closePath();
+
+
+            }
+
+            function fnCod2Amarillo ()
+            {
+                    //var ctx = document.getElementById('canvas').getContext('2d');
+
+                    var canvas = document.getElementById("cod2Amarillo");
+                    var ctx = canvas.getContext('2d');
+
+                    ctx.beginPath();
+
+                    ctx.fillStyle = "#F5E517";
+                    ctx.arc(150, 150, 150 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.arc(150, 150, 100 , 0, Math.PI, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#C4C9CE";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 70, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#000000";
+                    ctx.beginPath(); // Iniciar trazo
+                    ctx.arc(150, 150, 30, 0, Math.PI, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.lineWidth=2;
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.beginPath();
+                    ctx.arc(4, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(296, 147, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(150, 4, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(45, 50, 3, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.arc(255, 50, 3, 0, Math.PI *2 , true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=4;
+
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.moveTo(150,15);
+                    ctx.lineTo(145,150);
+                    ctx.lineTo(155,150);
+                    ctx.lineTo(150,15);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.closePath();
+
+            }
+
+            function nucleo()
+            {
+                    var ctx = document.getElementById('comportamienton').getContext('2d');
+
+                    roundedRect(ctx, 0, 0, 200, 200, 20,"#1F68AF");
+                    roundedRect(ctx, 0, 200, 200, 200, 20,"#0B8F3B");
+                    roundedRect(ctx, 200, 0, 200, 200, 20,"#F5E517");
+                    roundedRect(ctx, 200, 200, 200, 200, 20,"#E12C2B");
+
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "bold 34px sans-serif";
+                    ctx.fillText("Q",50,40);
+                    ctx.fillText("D",340,40);
+                    ctx.fillText("U",50,380);
+                    ctx.fillText("A",340,380);
+
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=1.5;
+
+                    //EJEy
+                    ctx.beginPath();
+                    ctx.moveTo(200,0);
+                    ctx.lineTo(200,400);
+                    ctx.stroke();
+                    ctx.closePath();
+                    //EJE X
+                    ctx.beginPath();
+                    ctx.moveTo(0,200);
+                    ctx.lineTo(400,200);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.lineWidth=0.5;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,0);
+                    ctx.lineTo(200,200);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(400,0);
+                    ctx.lineTo(200,200);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,400);
+                    ctx.lineTo(200,200);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(400,400);
+                    ctx.lineTo(200,200);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    // set transparency value
+                    ctx.globalAlpha = 0.1;
+                    // Draw semi transparent circles
+                    for (var i = 1; i < 4; i++) {
+                    ctx.beginPath();
+                    ctx.arc(200, 200, 66 * i, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    }
+
+                    ctx.globalAlpha = 1;
+                    //$PT_NUCLEO_AZ
+                    var ptq =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AZ *2) ?? 0}}, 2)/2);
+                    var ptu =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_VE *2) ?? 0}}, 2)/2);
+                    var pta =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_RO *2) ?? 0}}, 2)/2);
+                    var ptd =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AM *2) ?? 0}}, 2)/2);
+                    //alert (ptu);
+                    var ptqX = 200 - ptq;
+                    var ptqY = 200 - ptq;
+                    var ptuX = 200 - ptu;
+                    var ptuY = 200 + ptu;
+                    var ptaX = 200 + pta;
+                    var ptaY = 200 + pta;
+                    var ptdX = 200 + ptd;
+                    var ptdY = 200 - ptd;
+
+                    //NUEVA LINEA
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=2;
+                    ctx.beginPath();
+                    ctx.moveTo(ptqX,ptqY);
+                    ctx.lineTo(ptuX,ptuY);
+                    ctx.lineTo(ptaX,ptaY);
+                    ctx.lineTo(ptdX,ptdY);
+                    ctx.lineTo(ptqX,ptqY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 6;
+                    ctx.fillStyle = "#1c74ac";
+
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqX, ptqY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptuX, ptuY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptaX, ptaY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdX, ptdY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#000000";
+                    ctx.font = "16px sans-serif";
+                    ctx.fillText({{$PT_NUCLEO_AZ ?? 0}},ptqX -5 ,ptqY -5);
+                    ctx.fillText({{$PT_NUCLEO_VE ?? 0}},ptuX -10 ,ptuY +10);
+                    ctx.fillText({{$PT_NUCLEO_RO ?? 0}},ptaX +5 ,ptaY +5);
+                    ctx.fillText({{$PT_NUCLEO_AM ?? 0}},ptdX +5 ,ptdY -5);
+            }
+
+            function roundedRect(ctx,x,y,width,height,radius,color)
+            {
+                ctx.beginPath();
+                ctx.fillStyle = color;
+                ctx.moveTo(x,y+radius);
+                ctx.lineTo(x,y+height-radius);
+                ctx.quadraticCurveTo(x,y+height,x+radius,y+height);
+                ctx.lineTo(x+width-radius,y+height);
+                ctx.quadraticCurveTo(x+width,y+height,x+width,y+height-radius);
+                ctx.lineTo(x+width,y+radius);
+                ctx.quadraticCurveTo(x+width,y,x+width-radius,y);
+                ctx.lineTo(x+radius,y);
+                ctx.quadraticCurveTo(x,y,x,y+radius);
+                ctx.fill();
+                //ctx.stroke();
+            }
+
+            function diagramaCarrera1()
+            {
+                    var ctx = document.getElementById('carrera1').getContext('2d');
+
+                    roundedRect(ctx, 0, 0, 100, 100, 20,"#1F68AF");
+                    roundedRect(ctx, 0, 100, 100, 100, 20,"#0B8F3B");
+                    roundedRect(ctx, 100, 0, 100, 100, 20,"#F5E517");
+                    roundedRect(ctx, 100, 100, 100, 100, 20,"#E12C2B");
+
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "bold 20px sans-serif";
+                    ctx.fillText("Q",15,20);
+                    ctx.fillText("D",170,20);
+                    ctx.fillText("U",15,190);
+                    ctx.fillText("A",170,190);
+
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=1.5;
+
+                    //EJEy
+                    ctx.beginPath();
+                    ctx.moveTo(100,0);
+                    ctx.lineTo(100,200);
+                    ctx.stroke();
+                    ctx.closePath();
+                    //EJE X
+                    ctx.beginPath();
+                    ctx.moveTo(0,100);
+                    ctx.lineTo(200,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.lineWidth=0.5;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,0);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(200,0);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,200);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(200,200);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    // set transparency value
+                    ctx.globalAlpha = 0.1;
+                    // Draw semi transparent circles
+                    for (var i = 1; i < 4; i++)
+                    {
+                        ctx.beginPath();
+                        ctx.arc(100, 100, 30 * i, 0, Math.PI * 2, true);
+                        ctx.fill();
+                    }
+
+                    ctx.globalAlpha = 1;
+                    //PT_CIRCUN_AZ
+
+                    var ptq =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AZ) ?? 0}}, 2)/2);
+                    var ptu =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_VE) ?? 0}}, 2)/2);
+                    var pta =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_RO) ?? 0}}, 2)/2);
+                    var ptd =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AM) ?? 0}}, 2)/2);
+
+                    var ptqc =  Math.sqrt(Math.pow({{ ($carrera1->azul ) ?? 0}}, 2)/2);
+                    var ptuc =  Math.sqrt(Math.pow({{ ($carrera1->verde ) ?? 0}}, 2)/2);
+                    var ptac =  Math.sqrt(Math.pow({{ ($carrera1->rojo ) ?? 0}}, 2)/2);
+                    var ptdc =  Math.sqrt(Math.pow({{ ($carrera1->amarillo ) ?? 0}}, 2)/2);
+
+                    //nucleo
+                    var ptqX = 100 - ptq;
+                    var ptqY = 100 - ptq;
+                    var ptuX = 100 - ptu;
+                    var ptuY = 100 + ptu;
+                    var ptaX = 100 + pta;
+                    var ptaY = 100 + pta;
+                    var ptdX = 100 + ptd;
+                    var ptdY = 100 - ptd;
+
+                    //circustancial
+                    var ptqcX = 100 - ptqc;
+                    var ptqcY = 100 - ptqc;
+                    var ptucX = 100 - ptuc;
+                    var ptucY = 100 + ptuc;
+                    var ptacX = 100 + ptac;
+                    var ptacY = 100 + ptac;
+                    var ptdcX = 100 + ptdc;
+                    var ptdcY = 100 - ptdc;
+
+                    //nucleo
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=3;
+                    ctx.setLineDash([]);
+                    ctx.beginPath();
+                    ctx.moveTo(ptqX,ptqY);
+                    ctx.lineTo(ptuX,ptuY);
+                    ctx.lineTo(ptaX,ptaY);
+                    ctx.lineTo(ptdX,ptdY);
+                    ctx.lineTo(ptqX,ptqY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 6;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqX, ptqY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptuX, ptuY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptaX, ptaY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdX, ptdY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    //circustancial
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=2;
+                    ctx.setLineDash([6, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(ptqcX,ptqcY);
+                    ctx.lineTo(ptucX,ptucY);
+                    ctx.lineTo(ptacX,ptacY);
+                    ctx.lineTo(ptdcX,ptdcY);
+                    ctx.lineTo(ptqcX,ptqcY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 4;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqcX, ptqcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptucX, ptucY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptacX, ptacY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdcX, ptdcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "12px sans-serif";
+                    ctx.fillText({{$PT_NUCLEO_AZ ?? 0}},ptqX -10 ,ptqY -10);
+                    ctx.fillText({{$PT_NUCLEO_VE ?? 0}},ptuX -20 ,ptuY -10);
+                    ctx.fillText({{$PT_NUCLEO_RO ?? 0}},ptaX +5 ,ptaY + 5);
+                    ctx.fillText({{$PT_NUCLEO_AM ?? 0}},ptdX +10 ,ptdY -20);
+
+                    ctx.fillStyle = "#000000";
+                    ctx.font = "16px sans-serif";
+                    ctx.fillText({{intval($carrera1->azul) ?? 0}},ptqcX -5 ,ptqcY  - 5);
+                    ctx.fillText({{intval($carrera2->verde) ?? 0}},ptucX -30 ,ptucY +10);
+                    ctx.fillText({{intval($carrera2->rojo) ?? 0}},ptacX + 15 ,ptacY +5);
+                    ctx.fillText({{intval($carrera2->amarillo) ?? 0}},ptdcX + 20 ,ptdcY +20);
+
+            }
+
+            function diagramaCarrera2()
+            {
+                    var ctx = document.getElementById('carrera2').getContext('2d');
+
+                    roundedRect(ctx, 0, 0, 100, 100, 20,"#1F68AF");
+                    roundedRect(ctx, 0, 100, 100, 100, 20,"#0B8F3B");
+                    roundedRect(ctx, 100, 0, 100, 100, 20,"#F5E517");
+                    roundedRect(ctx, 100, 100, 100, 100, 20,"#E12C2B");
+
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "bold 20px sans-serif";
+                    ctx.fillText("Q",15,20);
+                    ctx.fillText("D",170,20);
+                    ctx.fillText("U",15,190);
+                    ctx.fillText("A",170,190);
+
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=1.5;
+
+                    //EJEy
+                    ctx.beginPath();
+                    ctx.moveTo(100,0);
+                    ctx.lineTo(100,200);
+                    ctx.stroke();
+                    ctx.closePath();
+                    //EJE X
+                    ctx.beginPath();
+                    ctx.moveTo(0,100);
+                    ctx.lineTo(200,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.lineWidth=0.5;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,0);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(200,0);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,200);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(200,200);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    // set transparency value
+                    ctx.globalAlpha = 0.1;
+                    // Draw semi transparent circles
+                    for (var i = 1; i < 4; i++)
+                    {
+                        ctx.beginPath();
+                        ctx.arc(100, 100, 30 * i, 0, Math.PI * 2, true);
+                        ctx.fill();
+                    }
+
+                    ctx.globalAlpha = 1;
+
+                    var ptq =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AZ) ?? 0}}, 2)/2);
+                    var ptu =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_VE) ?? 0}}, 2)/2);
+                    var pta =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_RO) ?? 0}}, 2)/2);
+                    var ptd =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AM) ?? 0}}, 2)/2);
+
+                    var ptqc =  Math.sqrt(Math.pow({{ ($carrera2->azul ) ?? 0}}, 2)/2);
+                    var ptuc =  Math.sqrt(Math.pow({{ ($carrera2->verde ) ?? 0}}, 2)/2);
+                    var ptac =  Math.sqrt(Math.pow({{ ($carrera2->rojo ) ?? 0}}, 2)/2);
+                    var ptdc =  Math.sqrt(Math.pow({{ ($carrera2->amarillo ) ?? 0}}, 2)/2);
+
+                    //nucleo
+                    var ptqX = 100 - ptq;
+                    var ptqY = 100 - ptq;
+                    var ptuX = 100 - ptu;
+                    var ptuY = 100 + ptu;
+                    var ptaX = 100 + pta;
+                    var ptaY = 100 + pta;
+                    var ptdX = 100 + ptd;
+                    var ptdY = 100 - ptd;
+
+                    //circustancial
+                    var ptqcX = 100 - ptqc;
+                    var ptqcY = 100 - ptqc;
+                    var ptucX = 100 - ptuc;
+                    var ptucY = 100 + ptuc;
+                    var ptacX = 100 + ptac;
+                    var ptacY = 100 + ptac;
+                    var ptdcX = 100 + ptdc;
+                    var ptdcY = 100 - ptdc;
+
+                    //nucleo
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=3;
+                    ctx.beginPath();
+                    ctx.moveTo(ptqX,ptqY);
+                    ctx.lineTo(ptuX,ptuY);
+                    ctx.lineTo(ptaX,ptaY);
+                    ctx.lineTo(ptdX,ptdY);
+                    ctx.lineTo(ptqX,ptqY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 6;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqX, ptqY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptuX, ptuY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptaX, ptaY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdX, ptdY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    //circustancial
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=2;
+                    ctx.setLineDash([6, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(ptqcX,ptqcY);
+                    ctx.lineTo(ptucX,ptucY);
+                    ctx.lineTo(ptacX,ptacY);
+                    ctx.lineTo(ptdcX,ptdcY);
+                    ctx.lineTo(ptqcX,ptqcY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 4;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqcX, ptqcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptucX, ptucY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptacX, ptacY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdcX, ptdcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "12px sans-serif";
+                    ctx.fillText({{$PT_NUCLEO_AZ ?? 0}},ptqX -10 ,ptqY -10);
+                    ctx.fillText({{$PT_NUCLEO_VE ?? 0}},ptuX -20 ,ptuY -10);
+                    ctx.fillText({{$PT_NUCLEO_RO ?? 0}},ptaX +5 ,ptaY + 5);
+                    ctx.fillText({{$PT_NUCLEO_AM ?? 0}},ptdX +10 ,ptdY -20);
+
+                    ctx.fillStyle = "#000000";
+                    ctx.font = "16px sans-serif";
+                    ctx.fillText({{intval($carrera2->azul) ?? 0}},ptqcX -5 ,ptqcY  - 5);
+                    ctx.fillText({{intval($carrera2->verde) ?? 0}},ptucX -30 ,ptucY +10);
+                    ctx.fillText({{intval($carrera2->rojo) ?? 0}},ptacX + 15 ,ptacY +5);
+                    ctx.fillText({{intval($carrera2->amarillo) ?? 0}},ptdcX + 20 ,ptdcY +20);
+
+            }
+
+            function diagramaCarrera3()
+            {
+                    var ctx = document.getElementById('carrera3').getContext('2d');
+
+                    roundedRect(ctx, 0, 0, 100, 100, 20,"#1F68AF");
+                    roundedRect(ctx, 0, 100, 100, 100, 20,"#0B8F3B");
+                    roundedRect(ctx, 100, 0, 100, 100, 20,"#F5E517");
+                    roundedRect(ctx, 100, 100, 100, 100, 20,"#E12C2B");
+
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "bold 20px sans-serif";
+                    ctx.fillText("Q",15,20);
+                    ctx.fillText("D",170,20);
+                    ctx.fillText("U",15,190);
+                    ctx.fillText("A",170,190);
+
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=1.5;
+
+                    //EJEy
+                    ctx.beginPath();
+                    ctx.moveTo(100,0);
+                    ctx.lineTo(100,200);
+                    ctx.stroke();
+                    ctx.closePath();
+                    //EJE X
+                    ctx.beginPath();
+                    ctx.moveTo(0,100);
+                    ctx.lineTo(200,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.lineWidth=0.5;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,0);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(200,0);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,200);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(200,200);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    // set transparency value
+                    ctx.globalAlpha = 0.1;
+                    // Draw semi transparent circles
+                    for (var i = 1; i < 4; i++)
+                    {
+                        ctx.beginPath();
+                        ctx.arc(100, 100, 30 * i, 0, Math.PI * 2, true);
+                        ctx.fill();
+                    }
+
+                    ctx.globalAlpha = 1;
+                    //PT_CIRCUN_AZ
+                    var ptq =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AZ) ?? 0}}, 2)/2);
+                    var ptu =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_VE) ?? 0}}, 2)/2);
+                    var pta =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_RO) ?? 0}}, 2)/2);
+                    var ptd =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AM) ?? 0}}, 2)/2);
+
+                    var ptqc =  Math.sqrt(Math.pow({{ ($carrera3->azul ) ?? 0}}, 2)/2);
+                    var ptuc =  Math.sqrt(Math.pow({{ ($carrera3->verde ) ?? 0}}, 2)/2);
+                    var ptac =  Math.sqrt(Math.pow({{ ($carrera3->rojo ) ?? 0}}, 2)/2);
+                    var ptdc =  Math.sqrt(Math.pow({{ ($carrera3->amarillo ) ?? 0}}, 2)/2);
+
+                    //nucleo
+                    var ptqX = 100 - ptq;
+                    var ptqY = 100 - ptq;
+                    var ptuX = 100 - ptu;
+                    var ptuY = 100 + ptu;
+                    var ptaX = 100 + pta;
+                    var ptaY = 100 + pta;
+                    var ptdX = 100 + ptd;
+                    var ptdY = 100 - ptd;
+
+                    //circustancial
+                    var ptqcX = 100 - ptqc;
+                    var ptqcY = 100 - ptqc;
+                    var ptucX = 100 - ptuc;
+                    var ptucY = 100 + ptuc;
+                    var ptacX = 100 + ptac;
+                    var ptacY = 100 + ptac;
+                    var ptdcX = 100 + ptdc;
+                    var ptdcY = 100 - ptdc;
+
+                    //nucleo
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=3;
+                    ctx.beginPath();
+                    ctx.moveTo(ptqX,ptqY);
+                    ctx.lineTo(ptuX,ptuY);
+                    ctx.lineTo(ptaX,ptaY);
+                    ctx.lineTo(ptdX,ptdY);
+                    ctx.lineTo(ptqX,ptqY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 6;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqX, ptqY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptuX, ptuY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptaX, ptaY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdX, ptdY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    //circustancial
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=2;
+                    ctx.setLineDash([6, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(ptqcX,ptqcY);
+                    ctx.lineTo(ptucX,ptucY);
+                    ctx.lineTo(ptacX,ptacY);
+                    ctx.lineTo(ptdcX,ptdcY);
+                    ctx.lineTo(ptqcX,ptqcY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 4;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqcX, ptqcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptucX, ptucY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptacX, ptacY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdcX, ptdcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "12px sans-serif";
+                    ctx.fillText({{$PT_NUCLEO_AZ ?? 0}},ptqX -10 ,ptqY -10);
+                    ctx.fillText({{$PT_NUCLEO_VE ?? 0}},ptuX -20 ,ptuY -10);
+                    ctx.fillText({{$PT_NUCLEO_RO ?? 0}},ptaX +5 ,ptaY + 5);
+                    ctx.fillText({{$PT_NUCLEO_AM ?? 0}},ptdX +10 ,ptdY -20);
+
+                    ctx.fillStyle = "#000000";
+                    ctx.font = "16px sans-serif";
+                    ctx.fillText({{intval($carrera3->azul) ?? 0}},ptqcX -5 ,ptqcY  - 5);
+                    ctx.fillText({{intval($carrera3->verde) ?? 0}},ptucX -30 ,ptucY +10);
+                    ctx.fillText({{intval($carrera3->rojo) ?? 0}},ptacX + 15 ,ptacY +5);
+                    ctx.fillText({{intval($carrera3->amarillo) ?? 0}},ptdcX + 20 ,ptdcY +20);
+
+            }
+
+            function diagramaCarrera4()
+            {
+                    var ctx = document.getElementById('carrera4').getContext('2d');
+
+                    roundedRect(ctx, 0, 0, 100, 100, 20,"#1F68AF");
+                    roundedRect(ctx, 0, 100, 100, 100, 20,"#0B8F3B");
+                    roundedRect(ctx, 100, 0, 100, 100, 20,"#F5E517");
+                    roundedRect(ctx, 100, 100, 100, 100, 20,"#E12C2B");
+
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "bold 20px sans-serif";
+                    ctx.fillText("Q",15,20);
+                    ctx.fillText("D",170,20);
+                    ctx.fillText("U",15,190);
+                    ctx.fillText("A",170,190);
+
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=1.5;
+
+                    //EJEy
+                    ctx.beginPath();
+                    ctx.moveTo(100,0);
+                    ctx.lineTo(100,200);
+                    ctx.stroke();
+                    ctx.closePath();
+                    //EJE X
+                    ctx.beginPath();
+                    ctx.moveTo(0,100);
+                    ctx.lineTo(200,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.lineWidth=0.5;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,0);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(200,0);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,200);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(200,200);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    // set transparency value
+                    ctx.globalAlpha = 0.1;
+                    // Draw semi transparent circles
+                    for (var i = 1; i < 4; i++)
+                    {
+                        ctx.beginPath();
+                        ctx.arc(100, 100, 30 * i, 0, Math.PI * 2, true);
+                        ctx.fill();
+                    }
+
+                    ctx.globalAlpha = 1;
+                    //PT_CIRCUN_AZ
+                    var ptq =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AZ) ?? 0}}, 2)/2);
+                    var ptu =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_VE) ?? 0}}, 2)/2);
+                    var pta =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_RO) ?? 0}}, 2)/2);
+                    var ptd =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AM) ?? 0}}, 2)/2);
+
+                    var ptqc =  Math.sqrt(Math.pow({{ ($carrera4->azul ) ?? 0}}, 2)/2);
+                    var ptuc =  Math.sqrt(Math.pow({{ ($carrera4->verde ) ?? 0}}, 2)/2);
+                    var ptac =  Math.sqrt(Math.pow({{ ($carrera4->rojo ) ?? 0}}, 2)/2);
+                    var ptdc =  Math.sqrt(Math.pow({{ ($carrera4->amarillo ) ?? 0}}, 2)/2);
+
+                    //nucleo
+                    var ptqX = 100 - ptq;
+                    var ptqY = 100 - ptq;
+                    var ptuX = 100 - ptu;
+                    var ptuY = 100 + ptu;
+                    var ptaX = 100 + pta;
+                    var ptaY = 100 + pta;
+                    var ptdX = 100 + ptd;
+                    var ptdY = 100 - ptd;
+
+                    //circustancial
+                    var ptqcX = 100 - ptqc;
+                    var ptqcY = 100 - ptqc;
+                    var ptucX = 100 - ptuc;
+                    var ptucY = 100 + ptuc;
+                    var ptacX = 100 + ptac;
+                    var ptacY = 100 + ptac;
+                    var ptdcX = 100 + ptdc;
+                    var ptdcY = 100 - ptdc;
+
+                    //nucleo
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=3;
+                    ctx.beginPath();
+                    ctx.moveTo(ptqX,ptqY);
+                    ctx.lineTo(ptuX,ptuY);
+                    ctx.lineTo(ptaX,ptaY);
+                    ctx.lineTo(ptdX,ptdY);
+                    ctx.lineTo(ptqX,ptqY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 6;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqX, ptqY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptuX, ptuY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptaX, ptaY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdX, ptdY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    //circustancial
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=2;
+                    ctx.setLineDash([6, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(ptqcX,ptqcY);
+                    ctx.lineTo(ptucX,ptucY);
+                    ctx.lineTo(ptacX,ptacY);
+                    ctx.lineTo(ptdcX,ptdcY);
+                    ctx.lineTo(ptqcX,ptqcY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 4;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqcX, ptqcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptucX, ptucY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptacX, ptacY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdcX, ptdcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "12px sans-serif";
+                    ctx.fillText({{$PT_NUCLEO_AZ ?? 0}},ptqX -10 ,ptqY -10);
+                    ctx.fillText({{$PT_NUCLEO_VE ?? 0}},ptuX -20 ,ptuY -10);
+                    ctx.fillText({{$PT_NUCLEO_RO ?? 0}},ptaX +5 ,ptaY + 5);
+                    ctx.fillText({{$PT_NUCLEO_AM ?? 0}},ptdX +10 ,ptdY -20);
+
+                    ctx.fillStyle = "#000000";
+                    ctx.font = "16px sans-serif";
+                    ctx.fillText({{intval($carrera4->azul) ?? 0}},ptqcX -5 ,ptqcY  - 5);
+                    ctx.fillText({{intval($carrera4->verde) ?? 0}},ptucX -30 ,ptucY +10);
+                    ctx.fillText({{intval($carrera4->rojo) ?? 0}},ptacX + 15 ,ptacY +5);
+                    ctx.fillText({{intval($carrera4->amarillo) ?? 0}},ptdcX + 20 ,ptdcY +20);
+
+            }
+
+            function diagramaCarrera5()
+            {
+                    var ctx = document.getElementById('carrera5').getContext('2d');
+
+                    roundedRect(ctx, 0, 0, 100, 100, 20,"#1F68AF");
+                    roundedRect(ctx, 0, 100, 100, 100, 20,"#0B8F3B");
+                    roundedRect(ctx, 100, 0, 100, 100, 20,"#F5E517");
+                    roundedRect(ctx, 100, 100, 100, 100, 20,"#E12C2B");
+
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "bold 20px sans-serif";
+                    ctx.fillText("Q",15,20);
+                    ctx.fillText("D",170,20);
+                    ctx.fillText("U",15,190);
+                    ctx.fillText("A",170,190);
+
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=1.5;
+
+                    //EJEy
+                    ctx.beginPath();
+                    ctx.moveTo(100,0);
+                    ctx.lineTo(100,200);
+                    ctx.stroke();
+                    ctx.closePath();
+                    //EJE X
+                    ctx.beginPath();
+                    ctx.moveTo(0,100);
+                    ctx.lineTo(200,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.lineWidth=0.5;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,0);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(200,0);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,200);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(200,200);
+                    ctx.lineTo(100,100);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    // set transparency value
+                    ctx.globalAlpha = 0.1;
+                    // Draw semi transparent circles
+                    for (var i = 1; i < 4; i++)
+                    {
+                        ctx.beginPath();
+                        ctx.arc(100, 100, 30 * i, 0, Math.PI * 2, true);
+                        ctx.fill();
+                    }
+
+                    ctx.globalAlpha = 1;
+                    //PT_CIRCUN_AZ
+                    var ptq =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AZ) ?? 0}}, 2)/2);
+                    var ptu =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_VE) ?? 0}}, 2)/2);
+                    var pta =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_RO) ?? 0}}, 2)/2);
+                    var ptd =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AM) ?? 0}}, 2)/2);
+
+                    var ptqc =  Math.sqrt(Math.pow({{ ($carrera5->azul ) ?? 0}}, 2)/2);
+                    var ptuc =  Math.sqrt(Math.pow({{ ($carrera5->verde ) ?? 0}}, 2)/2);
+                    var ptac =  Math.sqrt(Math.pow({{ ($carrera5->rojo ) ?? 0}}, 2)/2);
+                    var ptdc =  Math.sqrt(Math.pow({{ ($carrera5->amarillo ) ?? 0}}, 2)/2);
+
+                    //nucleo
+                    var ptqX = 100 - ptq;
+                    var ptqY = 100 - ptq;
+                    var ptuX = 100 - ptu;
+                    var ptuY = 100 + ptu;
+                    var ptaX = 100 + pta;
+                    var ptaY = 100 + pta;
+                    var ptdX = 100 + ptd;
+                    var ptdY = 100 - ptd;
+
+                    //circustancial
+                    var ptqcX = 100 - ptqc;
+                    var ptqcY = 100 - ptqc;
+                    var ptucX = 100 - ptuc;
+                    var ptucY = 100 + ptuc;
+                    var ptacX = 100 + ptac;
+                    var ptacY = 100 + ptac;
+                    var ptdcX = 100 + ptdc;
+                    var ptdcY = 100 - ptdc;
+
+                    //nucleo
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=3;
+                    ctx.beginPath();
+                    ctx.moveTo(ptqX,ptqY);
+                    ctx.lineTo(ptuX,ptuY);
+                    ctx.lineTo(ptaX,ptaY);
+                    ctx.lineTo(ptdX,ptdY);
+                    ctx.lineTo(ptqX,ptqY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 6;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqX, ptqY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptuX, ptuY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptaX, ptaY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdX, ptdY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    //circustancial
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=2;
+                    ctx.setLineDash([6, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(ptqcX,ptqcY);
+                    ctx.lineTo(ptucX,ptucY);
+                    ctx.lineTo(ptacX,ptacY);
+                    ctx.lineTo(ptdcX,ptdcY);
+                    ctx.lineTo(ptqcX,ptqcY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 4;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqcX, ptqcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptucX, ptucY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptacX, ptacY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdcX, ptdcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "12px sans-serif";
+                    ctx.fillText({{$PT_NUCLEO_AZ ?? 0}},ptqX -10 ,ptqY -10);
+                    ctx.fillText({{$PT_NUCLEO_VE ?? 0}},ptuX -20 ,ptuY -10);
+                    ctx.fillText({{$PT_NUCLEO_RO ?? 0}},ptaX +5 ,ptaY + 5);
+                    ctx.fillText({{$PT_NUCLEO_AM ?? 0}},ptdX +10 ,ptdY -20);
+
+                    ctx.fillStyle = "#000000";
+                    ctx.font = "16px sans-serif";
+                    ctx.fillText({{intval($carrera5->azul) ?? 0}},ptqcX -5 ,ptqcY  - 5);
+                    ctx.fillText({{intval($carrera5->verde) ?? 0}},ptucX -30 ,ptucY +10);
+                    ctx.fillText({{intval($carrera5->rojo) ?? 0}},ptacX + 15 ,ptacY +5);
+                    ctx.fillText({{intval($carrera5->amarillo) ?? 0}},ptdcX + 20 ,ptdcY +20);
+
+            }
+
+            function diagramaCarrera6()
+            {
+                    if(@json($carrera_preferida) != "0" )
+                    {
+                        var ctx = document.getElementById('carrera6').getContext('2d');
+                        roundedRect(ctx, 0, 0, 200, 200, 20,"#1F68AF");
+                        roundedRect(ctx, 0, 200, 200, 200, 20,"#0B8F3B");
+                        roundedRect(ctx, 200, 0, 200, 200, 20,"#F5E517");
+                        roundedRect(ctx, 200, 200, 200, 200, 20,"#E12C2B");
+
+                        ctx.globalAlpha = 1;
+                        ctx.fillStyle = "#FFFFFF";
+                        ctx.font = "bold 34px sans-serif";
+                        ctx.fillText("Q",50,40);
+                        ctx.fillText("D",340,40);
+                        ctx.fillText("U",50,380);
+                        ctx.fillText("A",340,380);
+
+                        ctx.strokeStyle = '#FFFFFF';
+                        ctx.lineWidth=1.5;
+
+                        //EJEy
+                        ctx.beginPath();
+                        ctx.moveTo(200,0);
+                        ctx.lineTo(200,400);
+                        ctx.stroke();
+                        ctx.closePath();
+                        //EJE X
+                        ctx.beginPath();
+                        ctx.moveTo(0,200);
+                        ctx.lineTo(400,200);
+                        ctx.stroke();
+                        ctx.closePath();
+
+                        ctx.lineWidth=0.5;
+
+                        ctx.beginPath();
+                        ctx.moveTo(0,0);
+                        ctx.lineTo(200,200);
+                        ctx.stroke();
+                        ctx.closePath();
+
+                        ctx.beginPath();
+                        ctx.moveTo(400,0);
+                        ctx.lineTo(200,200);
+                        ctx.stroke();
+                        ctx.closePath();
+
+                        ctx.beginPath();
+                        ctx.moveTo(0,400);
+                        ctx.lineTo(200,200);
+                        ctx.stroke();
+                        ctx.closePath();
+
+                        ctx.beginPath();
+                        ctx.moveTo(400,400);
+                        ctx.lineTo(200,200);
+                        ctx.stroke();
+                        ctx.closePath();
+
+                        ctx.fillStyle = "#FFFFFF";
+                        // set transparency value
+                        ctx.globalAlpha = 0.1;
+                        // Draw semi transparent circles
+                        for (var i = 1; i < 4; i++) {
+                        ctx.beginPath();
+                        ctx.arc(200, 200, 66 * i, 0, Math.PI * 2, true);
+                        ctx.fill();
+                        }
+
+                        ctx.globalAlpha = 1;
+                        //PT_CIRCUN_AZ
+
+                        var ptq =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AZ * 2) ?? 0}}, 2)/2);
+                        var ptu =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_VE * 2) ?? 0}}, 2)/2);
+                        var pta =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_RO * 2) ?? 0}}, 2)/2);
+                        var ptd =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AM * 2) ?? 0}}, 2)/2);
+
+                        var ptqc =  Math.sqrt(Math.pow({{ ($carrera6->azul * 2 ) ?? 0}}, 2)/2);
+                        var ptuc =  Math.sqrt(Math.pow({{ ($carrera6->verde * 2 ) ?? 0}}, 2)/2);
+                        var ptac =  Math.sqrt(Math.pow({{ ($carrera6->rojo  * 2) ?? 0}}, 2)/2);
+                        var ptdc =  Math.sqrt(Math.pow({{ ($carrera6->amarillo * 2) ?? 0}}, 2)/2);
+
+                        //nucleo
+                        var ptqX = 200 - ptq;
+                        var ptqY = 200 - ptq;
+                        var ptuX = 200 - ptu;
+                        var ptuY = 200 + ptu;
+                        var ptaX = 200 + pta;
+                        var ptaY = 200 + pta;
+                        var ptdX = 200 + ptd;
+                        var ptdY = 200 - ptd;
+
+                        //circustancial
+                        var ptqcX = 200 - ptqc;
+                        var ptqcY = 200 - ptqc;
+                        var ptucX = 200 - ptuc;
+                        var ptucY = 200 + ptuc;
+                        var ptacX = 200 + ptac;
+                        var ptacY = 200 + ptac;
+                        var ptdcX = 200 + ptdc;
+                        var ptdcY = 200 - ptdc;
+
+                        //nucleo
+                        ctx.strokeStyle = '#FFFFFF';
+                        ctx.lineWidth=3;
+                        ctx.beginPath();
+                        ctx.moveTo(ptqX,ptqY);
+                        ctx.lineTo(ptuX,ptuY);
+                        ctx.lineTo(ptaX,ptaY);
+                        ctx.lineTo(ptdX,ptdY);
+                        ctx.lineTo(ptqX,ptqY);
+
+                        ctx.stroke();
+                        ctx.closePath();
+                        var pointSize = 6;
+
+                        ctx.fillStyle = "#1c74ac";
+                        ctx.beginPath(); // Punto Q
+                        ctx.arc(ptqX, ptqY, pointSize, 0, Math.PI * 2, true);
+                        ctx.fill();
+                        ctx.closePath();
+
+                        ctx.fillStyle = "#009540";
+                        ctx.beginPath(); // Punto U
+                        ctx.arc(ptuX, ptuY, pointSize, 0, Math.PI * 2, true);
+                        ctx.fill(); // Terminar trazo
+                        ctx.closePath();
+
+                        ctx.fillStyle = "#e40439";
+                        ctx.beginPath(); // Punto A
+                        ctx.arc(ptaX, ptaY, pointSize, 0, Math.PI * 2, true);
+                        ctx.fill(); // Terminar trazo
+                        ctx.closePath();
+
+                        ctx.fillStyle = "#f4bc00";
+                        ctx.beginPath(); // Punto D
+                        ctx.arc(ptdX, ptdY, pointSize, 0, Math.PI * 2, true);
+                        ctx.fill(); // Terminar trazo
+                        ctx.closePath();
+
+                        //circustancial
+                        ctx.strokeStyle = '#FFFFFF';
+                        ctx.lineWidth=2;
+                        ctx.setLineDash([6, 3]);
+                        ctx.beginPath();
+                        ctx.moveTo(ptqcX,ptqcY);
+                        ctx.lineTo(ptucX,ptucY);
+                        ctx.lineTo(ptacX,ptacY);
+                        ctx.lineTo(ptdcX,ptdcY);
+                        ctx.lineTo(ptqcX,ptqcY);
+
+                        ctx.stroke();
+                        ctx.closePath();
+                        var pointSize = 4;
+
+                        ctx.fillStyle = "#1c74ac";
+                        ctx.beginPath(); // Punto Q
+                        ctx.arc(ptqcX, ptqcY, pointSize, 0, Math.PI * 2, true);
+                        ctx.fill();
+                        ctx.closePath();
+
+                        ctx.fillStyle = "#009540";
+                        ctx.beginPath(); // Punto U
+                        ctx.arc(ptucX, ptucY, pointSize, 0, Math.PI * 2, true);
+                        ctx.fill(); // Terminar trazo
+                        ctx.closePath();
+
+                        ctx.fillStyle = "#e40439";
+                        ctx.beginPath(); // Punto A
+                        ctx.arc(ptacX, ptacY, pointSize, 0, Math.PI * 2, true);
+                        ctx.fill(); // Terminar trazo
+                        ctx.closePath();
+
+                        ctx.fillStyle = "#f4bc00";
+                        ctx.beginPath(); // Punto D
+                        ctx.arc(ptdcX, ptdcY, pointSize, 0, Math.PI * 2, true);
+                        ctx.fill(); // Terminar trazo
+                        ctx.closePath();
+
+                        ctx.fillStyle = "#000000";
+                        ctx.font = "16px sans-serif";
+                        ctx.fillText({{$PT_NUCLEO_AZ ?? 0}},ptqX -10 ,ptqY -10);
+                        ctx.fillText({{$PT_NUCLEO_VE ?? 0}},ptuX -20 ,ptuY -10);
+                        ctx.fillText({{$PT_NUCLEO_RO ?? 0}},ptaX +5 ,ptaY + 5);
+                        ctx.fillText({{$PT_NUCLEO_AM ?? 0}},ptdX +10 ,ptdY -20);
+
+                        ctx.fillStyle = "#000000";
+                        ctx.font = "12px sans-serif";
+                        ctx.fillText({{intval($carrera6->azul) ?? 0}},ptqcX -5 ,ptqcY  - 5);
+                        ctx.fillText({{intval($carrera6->verde) ?? 0}},ptucX -30 ,ptucY +10);
+                        ctx.fillText({{intval($carrera6->rojo) ?? 0}},ptacX + 15 ,ptacY +5);
+                        ctx.fillText({{intval($carrera6->amarillo) ?? 0}},ptdcX + 20 ,ptdcY +20);
+                    }
+            }
+
+            function circustancial()
+            {
+                    var ctx = document.getElementById('comportamientoc').getContext('2d');
+
+
+
+                    roundedRect(ctx, 0, 0, 200, 200, 20,"#1F68AF");
+                    roundedRect(ctx, 0, 200, 200, 200, 20,"#0B8F3B");
+                    roundedRect(ctx, 200, 0, 200, 200, 20,"#F5E517");
+                    roundedRect(ctx, 200, 200, 200, 200, 20,"#E12C2B");
+
+
+
+                    ctx.globalAlpha = 1;
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.font = "bold 34px sans-serif";
+                    ctx.fillText("Q",50,40);
+                    ctx.fillText("D",340,40);
+                    ctx.fillText("U",50,380);
+                    ctx.fillText("A",340,380);
+
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=1.5;
+
+                    //EJEy
+                    ctx.beginPath();
+                    ctx.moveTo(200,0);
+                    ctx.lineTo(200,400);
+                    ctx.stroke();
+                    ctx.closePath();
+                    //EJE X
+                    ctx.beginPath();
+                    ctx.moveTo(0,200);
+                    ctx.lineTo(400,200);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.lineWidth=0.5;
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,0);
+                    ctx.lineTo(200,200);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(400,0);
+                    ctx.lineTo(200,200);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(0,400);
+                    ctx.lineTo(200,200);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.beginPath();
+                    ctx.moveTo(400,400);
+                    ctx.lineTo(200,200);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#FFFFFF";
+                    // set transparency value
+                    ctx.globalAlpha = 0.1;
+                    // Draw semi transparent circles
+                    for (var i = 1; i < 4; i++) {
+                    ctx.beginPath();
+                    ctx.arc(200, 200, 66 * i, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    }
+
+                    ctx.globalAlpha = 1;
+                    //PT_CIRCUN_AZ
+
+                    var ptq =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AZ * 2) ?? 0}}, 2)/2);
+                    var ptu =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_VE * 2) ?? 0}}, 2)/2);
+                    var pta =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_RO * 2) ?? 0}}, 2)/2);
+                    var ptd =  Math.sqrt(Math.pow({{ ($PT_NUCLEO_AM * 2) ?? 0}}, 2)/2);
+
+                    var ptqc =  Math.sqrt(Math.pow({{ ($PT_CIRCUN_AZ * 2) ?? 0}}, 2)/2);
+                    var ptuc =  Math.sqrt(Math.pow({{ ($PT_CIRCUN_VE * 2) ?? 0}}, 2)/2);
+                    var ptac =  Math.sqrt(Math.pow({{ ($PT_CIRCUN_RO * 2) ?? 0}}, 2)/2);
+                    var ptdc =  Math.sqrt(Math.pow({{ ($PT_CIRCUN_AM * 2) ?? 0}}, 2)/2);
+
+                    //nucleo
+                    var ptqX = 200 - ptq;
+                    var ptqY = 200 - ptq;
+                    var ptuX = 200 - ptu;
+                    var ptuY = 200 + ptu;
+                    var ptaX = 200 + pta;
+                    var ptaY = 200 + pta;
+                    var ptdX = 200 + ptd;
+                    var ptdY = 200 - ptd;
+
+                    //circustancial
+                    var ptqcX = 200 - ptqc;
+                    var ptqcY = 200 - ptqc;
+                    var ptucX = 200 - ptuc;
+                    var ptucY = 200 + ptuc;
+                    var ptacX = 200 + ptac;
+                    var ptacY = 200 + ptac;
+                    var ptdcX = 200 + ptdc;
+                    var ptdcY = 200 - ptdc;
+
+                    //nucleo
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=3;
+                    ctx.beginPath();
+                    ctx.moveTo(ptqX,ptqY);
+                    ctx.lineTo(ptuX,ptuY);
+                    ctx.lineTo(ptaX,ptaY);
+                    ctx.lineTo(ptdX,ptdY);
+                    ctx.lineTo(ptqX,ptqY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 6;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqX, ptqY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptuX, ptuY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptaX, ptaY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdX, ptdY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    //circustancial
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth=2;
+                    ctx.setLineDash([6, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(ptqcX,ptqcY);
+                    ctx.lineTo(ptucX,ptucY);
+                    ctx.lineTo(ptacX,ptacY);
+                    ctx.lineTo(ptdcX,ptdcY);
+                    ctx.lineTo(ptqcX,ptqcY);
+
+                    ctx.stroke();
+                    ctx.closePath();
+                    var pointSize = 4;
+
+                    ctx.fillStyle = "#1c74ac";
+                    ctx.beginPath(); // Punto Q
+                    ctx.arc(ptqcX, ptqcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#009540";
+                    ctx.beginPath(); // Punto U
+                    ctx.arc(ptucX, ptucY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#e40439";
+                    ctx.beginPath(); // Punto A
+                    ctx.arc(ptacX, ptacY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#f4bc00";
+                    ctx.beginPath(); // Punto D
+                    ctx.arc(ptdcX, ptdcY, pointSize, 0, Math.PI * 2, true);
+                    ctx.fill(); // Terminar trazo
+                    ctx.closePath();
+
+                    ctx.fillStyle = "#000000";
+                    ctx.font = "16px sans-serif";
+                    ctx.fillText({{$PT_NUCLEO_AZ ?? 0}},ptqX -10 ,ptqY -10);
+                    ctx.fillText({{$PT_NUCLEO_VE ?? 0}},ptuX -20 ,ptuY -10);
+                    ctx.fillText({{$PT_NUCLEO_RO ?? 0}},ptaX +5 ,ptaY + 5);
+                    ctx.fillText({{$PT_NUCLEO_AM ?? 0}},ptdX +10 ,ptdY -20);
+
+                    ctx.fillStyle = "#000000";
+                    ctx.font = "12px sans-serif";
+                    ctx.fillText({{$PT_CIRCUN_AZ ?? 0}},ptqcX -5 ,ptqcY  - 5);
+                    ctx.fillText({{$PT_CIRCUN_VE ?? 0}},ptucX -30 ,ptucY +10);
+                    ctx.fillText({{$PT_CIRCUN_RO ?? 0}},ptacX + 15 ,ptacY +5);
+                    ctx.fillText({{$PT_CIRCUN_AM ?? 0}},ptdcX + 20 ,ptdcY +20);
+
+            }
+
+            function leyandaCarreras()
+            {
+                var ctx = document.getElementById('leyendacarreras').getContext('2d');
+
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=4;
+                    ctx.beginPath();
+                    ctx.moveTo(50,30);
+                    ctx.lineTo(150,30);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.lineWidth=2;
+                    ctx.setLineDash([6, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(250,30);
+                    ctx.lineTo(350,30);
+                    ctx.stroke();
+                    ctx.closePath();
+                    ctx.font = "bold 12px sans-serif";
+                    ctx.fillText("Núcleo",80,20);
+                    ctx.font = "bold 12px sans-serif";
+                    ctx.fillText("Carrera",270,20);
+            }
+
+            function leyandaCarreraPreferida()
+            {
+                var ctx = document.getElementById('leyendacarrerapre').getContext('2d');
+
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth=4;
+                    ctx.beginPath();
+                    ctx.moveTo(50,30);
+                    ctx.lineTo(150,30);
+                    ctx.stroke();
+                    ctx.closePath();
+
+                    ctx.lineWidth=2;
+                    ctx.setLineDash([6, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(250,30);
+                    ctx.lineTo(350,30);
+                    ctx.stroke();
+                    ctx.closePath();
+                    ctx.font = "bold 12px sans-serif";
+                    ctx.fillText("Núcleo",80,20);
+                    ctx.font = "bold 12px sans-serif";
+                    ctx.fillText("Carrera",270,20);
+            }
+
+
+
+            function leyandaComparativa()
+            {
+                var ctx = document.getElementById('leyendacomparativa').getContext('2d');
+
+
+                    ctx.fillStyle = '#1F68AF';
+                    ctx.fillRect(65, 14, 15, 15);
+                    ctx.fillStyle = '#F5E517';
+                    ctx.fillRect(85, 14, 15, 15);
+                    ctx.fillStyle = '#0B8F3B';
+                    ctx.fillRect(105, 14, 15, 15);
+                    ctx.fillStyle = '#E12C2B';
+                    ctx.fillRect(125, 14, 15, 15);
+
+
+                    ctx.fillStyle = '#6D97CD';
+                    ctx.fillRect(265, 14, 15, 15);
+                    ctx.fillStyle = '#F4BD0E';
+                    ctx.fillRect(285, 14, 15, 15);
+                    ctx.fillStyle = '#A9A45C';
+                    ctx.fillRect(305, 14, 15, 15);
+                    ctx.fillStyle = '#EF7855';
+                    ctx.fillRect(325, 14, 15, 15);
+
+
+            }
+
+
+
+            function drawNeedle(radius, radianAngle)
+            {
+
+                //var ctx = document.getElementById('flecha1').getContext('2d');
+
+                var canvas = document.getElementById("flecha1");
+                var ctx = canvas.getContext('2d');
+                var cw = canvas.offsetWidth;
+                var ch = canvas.offsetHeight;
+                var cx = cw / 2;
+                var cy = ch - (ch / 4);
+
+                ctx.translate(cx, cy);
+                ctx.rotate(radianAngle);
+                ctx.beginPath();
+                ctx.moveTo(0, -5);
+                ctx.lineTo(radius, 0);
+                ctx.lineTo(0, 5);
+                ctx.fillStyle = 'rgba(0, 76, 0, 0.8)';
+                ctx.fill();
+                ctx.rotate(-radianAngle);
+                ctx.translate(-cx, -cy);
+                ctx.beginPath();
+                ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            var codigoChartQ3 = function()
+            {
+                new Chartist.Pie('#codigoChartQ3',
+                {
+                    series: [25,0,0,0,75]
+                },
+                {
+                    donut: true,
+                    donutWidth: 50,
+                    donutSolid: true,
+                    startAngle: 270,
+                    total: 200,
+                    showLabel: false
+                });
+            }
+
+
+            var codigoChartU2 = function()
+            {
+                new Chartist.Pie('#codigoChartU2',
+                {
+                    series: [0,50,0,0,50]
+                },
+                {
+                    donut: true,
+                    donutWidth: 50,
+                    donutSolid: true,
+                    startAngle: 270,
+                    total: 200,
+                    showLabel: false
+                });
+            }
+            var codigoChartU3 = function()
+            {
+                new Chartist.Pie('#codigoChartU3',
+                {
+                    series: [0,25,0,0,75]
+                },
+                {
+                    donut: true,
+                    donutWidth: 50,
+                    donutSolid: true,
+                    startAngle: 270,
+                    total: 200,
+                    showLabel: false
+                });
+            }
+
+
+            var codigoChartA3 = function()
+            {
+                new Chartist.Pie('#codigoChartA3',
+                {
+                    series: [0,0,25,0,75]
+                },
+                {
+                    donut: true,
+                    donutWidth: 50,
+                    donutSolid: true,
+                    startAngle: 270,
+                    total: 200,
+                    showLabel: false
+                });
+            }
+
+
+            var codigoChartD3 = function()
+            {
+                new Chartist.Pie('#codigoChartD3',
+                {
+                    series: [0,0,0,25,75]
+                },
+                {
+                    donut: true,
+                    donutWidth: 50,
+                    donutSolid: true,
+                    startAngle: 270,
+                    total: 200,
+                    showLabel: false
+                });
+            }
+
+            $(window).on('beforeunload', function(){
+        $('#pageLoader').show();
+    });
+
+    $(function () {
+        $('#pageLoader').hide();
+    })
+
+
+
+</script>
+
+@stop
+
