@@ -42,37 +42,16 @@ class PersonaController extends Controller
 
     public function show($id)
     {
-        // $empresas = DB::table('empresas')
-        //     ->select('empresas.*')
-        //     ->where('slug', $id)
-        //     ->first();
-
-        // $personas = DB::table('personas')
-        // ->select('personas.*')
-        // ->where('id_empresa', $empresas->id)
-        // ->get();
-
-        // return view('personas.listar',['personas' => $personas,
-        //                                'empresa_slug' => $id,
-        //                                'empresaNombre' => $empresas->nombre]);
-
-
+        return redirect('/');
     }
 
 
     public function edit($id)
     {
-        // if ($this->middleware('auth'))
-        //     dd($this->middleware('auth'));
-        // else
-
-        // dd('formulario sin login');
-
         if (is_null(auth()->user()))
             return view('auth.recuperar');
         else
             return redirect('home');
-
 
     }
 
@@ -151,6 +130,27 @@ class PersonaController extends Controller
                     return redirect('formClaveUsuario');
 
             }
+
+    }
+
+    public function recuperaUsuario(Request $request)
+    {
+
+         $validatedData = $request->validate(['email'  => 'required|email']);
+
+        $persona = DB::table('personas')
+        ->select('personas.*')
+        ->where('email', $request->input('email'))
+        ->where('estado','ACTIVO')
+        ->first();
+
+        if (!is_null($persona))
+        {
+           $clave = $this->nuevaClave($request->input('email'));
+           Session::flash('message-error', 'La cuenta no se encuentra registrada');
+           
+        }
+        return view('auth.login');
 
     }
 

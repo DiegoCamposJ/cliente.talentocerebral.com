@@ -153,8 +153,7 @@
                         <!-- we need this logo when user switches to nav-function-top -->
                         <div class="page-logo">
                             <a href="#" class="page-logo-link press-scale-down d-flex align-items-center position-relative" data-toggle="modal" data-target="#modal-shortcut">
-                                <i class="fad fa-brain fa-4x text-white"></i>
-                                <span class="page-logo-text mr-1">Cerebro360 - Cliente</span>
+                                <img class="page-logo-text mr-1" src="{{ asset('img/logo.png') }}" style=" width: 220px;">
                                 <span class="position-absolute text-white opacity-50 small pos-top pos-right mr-2 mt-n2"></span>
 
                             </a>
@@ -257,7 +256,7 @@
                         </div>
                         <div>
                             <ul class="list-table m-0">
-                                <span class="hidden-md-down fw-700">2024 © &nbsp;<a href='https://www.cerebro360.com' class='text-primary fw-500' title='cerebro360.com' target='_blank'>cerebro360.com</a></span>
+                                <span class="hidden-md-down fw-700">2025 © &nbsp;<a href='https://www.cerebro360.com' class='text-primary fw-500' title='cerebro360.com' target='_blank'>cerebro360.com</a></span>
                             </ul>
                         </div>
                     </footer>

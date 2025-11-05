@@ -5,15 +5,19 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 
-//Route::get('/', 'HomeController@index')->name('home');//DC 3 nov 2020
-
 Route::get('formClaveUsuario', 'PersonaController@formPassword')->name('usuario.cambio');
-//Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/home', 'EvaluacionController@index')->name('home');
 
 Route::get('/', function(){
     return view('auth.login');
 });
+
+Route::get('recuperar', function(){
+    if (is_null(auth()->user()))
+            return view('auth.recuperar');
+        else
+            return redirect('home');
+})->name('recuperar-password');
 
 Route::get('showTest/{id}', 'EvaluacionController@showTest');
 
@@ -45,7 +49,7 @@ Route::get('guardarProfesion/{slugEvaluacion}/{idProfesion}', 'EvaluacionControl
 Route::get('preguntaZurdo/{slug}', 'EvaluacionController@preguntaZurdo')->name('evaluacion.preguntazurdo');
 Route::get('preguntaDiestro/{slug}', 'EvaluacionController@preguntaDiestro')->name('evaluacion.preguntadiestro');
 
-Route::post('claveUsuario', 'PersonaController@cambioPassword')->name('usuario.clave');
+
 
 
 
@@ -53,6 +57,10 @@ Route::resource('usuario', 'UsuarioController');
 Route::resource('persona', 'PersonaController');
 Route::resource('evaluacion', 'EvaluacionController');
 Route::resource('evaluacionB4L', 'EvaluacionB4LController');
+
+Route::post('recuperaUsuario', 'PersonaController@recuperaUsuario')->name('usuario.recuperar');
+Route::post('claveUsuario', 'PersonaController@cambioPassword')->name('usuario.clave');
+
 
 
 //Auth::routes();

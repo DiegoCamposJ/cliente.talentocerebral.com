@@ -268,7 +268,7 @@
                         <tr>
                             <td style="font-size: 16px; color: #fff; font-weight: 500; padding: 5px; text-align: center;
                                 border-radius: 3px 3px 0 0; background: #3575db;">
-                                <h1 class="text-white">Brain Solutions</h1>
+                                <h1 class="text-white">Cerebro360</h1>
                             </td>
                         </tr>
 
@@ -303,14 +303,14 @@
                                             Puede acceder al sistema desde el siguiente link: <br><br>
 
                                             <div style="text-align: center;">
-                                                <a href="http://www.cerebro360.com" class="btn-primary">
+                                                <a href="https://talentocerebral.cerebro360.com/" class="btn-primary">
                                                     <h4>Acceso</h4>
                                                 </a>
                                             </div>
                                             <br><br>
 
-                                            <strong> <h4>Cerebro 360</h4> </strong><br>
-                                            <strong> <h3>BRAIN SOLUTIONS</h3> </strong>
+                                            <strong> <h4>Cerebro 360</h4> </strong>
+                                           
 
                                         </td>
                                     </tr>
