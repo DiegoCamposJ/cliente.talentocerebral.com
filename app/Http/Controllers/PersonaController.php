@@ -27,6 +27,38 @@ class PersonaController extends Controller
         return redirect('/');
     }
 
+    /**
+     * Autentica a un usuario del aplicativo usando sus credenciales.
+     */
+    public function logincli(Request $request)
+    {
+        $credentials = $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        $remember = $request->boolean('remember', false);
+
+        $canLogin = Auth::attempt([
+            'email'    => $credentials['email'],
+            'password' => $credentials['password'],
+            'estado'   => 'ACTIVO',
+        ], $remember);
+
+        if ($canLogin) {
+            $request->session()->regenerate();
+
+            return redirect()->intended(route('home', [], false));
+        }
+
+        return redirect()
+            ->back()
+            ->withInput($request->except('password'))
+            ->withErrors([
+                'password' => 'Las credenciales proporcionadas no son válidas o la cuenta está inactiva.',
+            ]);
+    }
+
 
     public function create()
     {
@@ -48,18 +80,18 @@ class PersonaController extends Controller
 
     public function edit($id)
     {
-        if (is_null(auth()->user()))
-            return view('auth.recuperar');
-        else
-            return redirect('home');
+        // if (is_null(auth()->user()))
+        //     return view('auth.recuperar');
+        // else
+        //     return redirect('home');
+
+        return redirect('/');
 
     }
 
 
     public function update(Request $request, $id)
     {
-        //dd('ingreso update');
-
 
         $validatedData = $request->validate([
             //'email'  => 'required|email:rfc,dns',

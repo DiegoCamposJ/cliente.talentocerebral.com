@@ -32,15 +32,18 @@
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">
-				<form class="login100-form validate-form"  method="POST" action="{{ route('login') }}">
+				@include('alerts.success')
+				<form class="login100-form validate-form"  method="POST" action="{{ route('login-cliente', [], false) }}">
 					@csrf
 					<span class="login100-form-title p-b-43">
-						Cerebro360
+						<img class="page-logo-text mr-1" src="{{ asset('img/logo.png') }}" style=" width: 220px;">
 					</span>
+
+					
 					
 					
 					<div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
-						<input class="input100" type="text" name="email">
+						<input class="input100" type="email" name="email" value="{{ old('email') }}">
 						<span class="focus-input100"></span>
 						<span class="label-input100">Email</span>
 					</div>
@@ -50,6 +53,9 @@
 						<input class="input100" type="password" name="password">
 						<span class="focus-input100"></span>
 						<span class="label-input100">Password</span>
+						@if($errors->has('password'))
+							<span class="text-danger">{{ $errors->first('password') }}</span>
+						@endif
 					</div>
 
 					

@@ -45,7 +45,8 @@
             </div>
             <div class="card p-4 border-top-left-radius-0 border-top-right-radius-0">
                 @include('alerts.success')
-                <form method="POST" action="{{ route('login') }}">
+                <form class="login100-form validate-form"  method="POST" action="{{ route('login-cliente', [], false) }}">
+                
                     @csrf
                     <div class="form-group">
                         <label class="form-label" for="username">Usuario</label>

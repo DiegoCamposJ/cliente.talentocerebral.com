@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Facades\Auth;
 
 
 Route::get('formClaveUsuario', 'PersonaController@formPassword')->name('usuario.cambio');
@@ -11,6 +11,8 @@ Route::get('/home', 'EvaluacionController@index')->name('home');
 Route::get('/', function(){
     return view('auth.login');
 });
+
+Route::post('logincli', 'PersonaController@logincli')->name('login-cliente');
 
 Route::get('recuperar', function(){
     if (is_null(auth()->user()))
@@ -62,13 +64,10 @@ Route::post('recuperaUsuario', 'PersonaController@recuperaUsuario')->name('usuar
 Route::post('claveUsuario', 'PersonaController@cambioPassword')->name('usuario.clave');
 
 
-
-//Auth::routes();
 Auth::routes([
-
+    'login' => false,
     'reset' => false, // Password Reset Routes...
     'verify' => false, // Email Verification Routes...
   ]);
-
 
 
